@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Three.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <!-- PWA: Link to Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -17,43 +21,74 @@
     <meta name="theme-color" content="#6366f1">
 
     <style>
+        /* Added for smoother scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #374151;
-            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+            background-color: #f3f4f6; /* Light background */
+            color: #374151; /* Dark text */
+            /* Removed scroll-behavior from body as it's now on html */
             margin: 0; /* Remove default body margin */
             overflow-x: hidden; /* Prevent horizontal scroll */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem; /* Adjusted for better mobile padding */
+        }
+        @media (min-width: 768px) { /* Medium screens and up */
+            .container {
+                padding: 2rem;
+            }
         }
         .section-title {
-            font-size: 2.25rem;
+            font-size: 1.75rem; /* Smaller on mobile */
             font-weight: 700;
-            color: #1f2937;
+            color: #1f2937; /* Default title color */
             margin-bottom: 1.5rem;
             border-bottom: 3px solid #6366f1;
             padding-bottom: 0.5rem;
+            text-align: center; /* Center titles */
+            transition: color 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .section-title {
+                font-size: 2.25rem; /* Larger on desktop */
+                text-align: left;
+            }
         }
         .card {
-            background-color: #ffffff;
+            background-color: #ffffff; /* Default card background */
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
+            padding: 1.5rem; /* Adjusted for better mobile padding */
             margin-bottom: 1.5rem;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Add transition for hover */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
         }
         .card:hover {
-            transform: translateY(-5px); /* Lift card slightly on hover */
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
         }
         .experience-item {
             margin-bottom: 1.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb; /* Default border color */
+            transition: background-color 0.3s ease; /* Smooth background transition */
+            border-radius: 0.5rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .experience-item:hover {
+            background-color: #f9fafb; /* Light hover background */
         }
         .experience-item:last-child {
             border-bottom: none;
@@ -62,95 +97,64 @@
         }
         .skill-category {
             font-weight: 600;
-            color: #4b5563;
+            color: #374151; /* Default text color */
             margin-bottom: 0.5rem;
-            transition: color 0.3s ease-in-out; /* For skill hover effect */
+            transition: color 0.3s ease-in-out;
         }
         .skill-category:hover {
-            color: #6366f1; /* Change color on hover */
+            color: #6366f1;
         }
         .project-item {
             margin-bottom: 1rem;
+            transition: transform 0.2s ease-in-out; /* Project item hover */
+        }
+        .project-item:hover {
+            transform: translateX(5px);
+            color: #6366f1;
         }
         .award-item {
             margin-bottom: 0.5rem;
+            transition: transform 0.2s ease-in-out; /* Award item hover */
         }
-        /* Custom Modal Styles */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            justify-content: center;
-            align-items: center;
+        .award-item:hover {
+            transform: translateX(5px);
+            color: #6366f1;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 500px;
-            text-align: center;
-        }
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #6366f1;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
         /* Back to Top Button */
         #back-to-top {
-            display: none; /* Hidden by default */
-            position: fixed; /* Fixed position */
-            bottom: 20px; /* 20px from the bottom */
-            right: 30px; /* 30px from the right */
-            z-index: 99; /* High z-index to be on top */
-            border: none; /* Remove borders */
-            outline: none; /* Remove outline */
-            background-color: #6366f1; /* Background color */
-            color: white; /* Text color */
-            cursor: pointer; /* Add a mouse pointer on hover */
-            padding: 15px; /* Some padding */
-            border-radius: 50%; /* Rounded corners */
-            font-size: 18px; /* Increase font size */
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px; /* Adjusted for smaller screens */
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: #6366f1;
+            color: white;
+            cursor: pointer;
+            padding: 12px; /* Smaller padding on mobile */
+            border-radius: 50%;
+            font-size: 16px; /* Smaller font on mobile */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
+        @media (min-width: 768px) {
+            #back-to-top {
+                right: 30px;
+                padding: 15px;
+                font-size: 18px;
+            }
+        }
         #back-to-top:hover {
-            background-color: #4f46e5; /* Darker background on hover */
+            background-color: #4f46e5;
             transform: translateY(-3px);
         }
 
         /* Header specific styles for Three.js canvas */
         .header-content {
             position: relative;
-            z-index: 10; /* Ensure content is above canvas */
+            z-index: 10;
             padding: 2rem;
         }
         #threejs-canvas {
@@ -159,94 +163,191 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Place canvas behind content */
-            border-radius: 0.75rem; /* Match header border-radius */
+            z-index: 1;
+            border-radius: 0.75rem;
         }
         header {
-            position: relative; /* Needed for absolute positioning of canvas */
-            overflow: hidden; /* Hide overflow from canvas */
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Chat Modal Specific Styles */
-        #chatModal .modal-content {
-            max-width: 600px;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-        #chat-history {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            background-color: #f9fafb;
-        }
-        .chat-message {
-            margin-bottom: 0.75rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.75rem;
-            max-width: 80%;
-        }
-        .user-message {
-            background-color: #e0e7ff; /* Light indigo */
-            align-self: flex-end;
-            margin-left: auto;
-        }
-        .ai-message {
-            background-color: #d1fae5; /* Light green */
-            align-self: flex-start;
-            margin-right: auto;
-        }
-        #chat-input-container {
-            display: flex;
-            gap: 0.5rem;
-        }
-        #chat-input {
-            flex-grow: 1;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            resize: vertical;
-            min-height: 40px;
-        }
-        #send-button {
-            padding: 0.75rem 1.25rem;
-            background-color: #6366f1;
-            color: white;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #send-button:hover {
-            background-color: #4f46e5;
-        }
-        .chat-loader {
-            display: none;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
         .company-logo {
-            height: 24px; /* Adjust size as needed */
+            height: 24px;
             width: auto;
             vertical-align: middle;
             margin-right: 8px;
-            border-radius: 4px; /* Slightly rounded corners for logos */
+            border-radius: 4px;
+        }
+
+        /* Responsive Navigation */
+        nav {
+            background-color: #ffffff; /* Default nav background */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Default nav shadow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for nav */
+        }
+        nav ul {
+            flex-wrap: wrap; /* Allow nav items to wrap on smaller screens */
+            justify-content: center;
+            padding: 0.5rem 0; /* Adjust padding */
+        }
+        nav li {
+            margin: 0.5rem 0.75rem; /* Spacing between nav items */
+        }
+        nav a {
+            padding: 0.75rem 1rem; /* Increased padding for button-like feel */
+            border-radius: 9999px; /* Fully rounded pills */
+            font-weight: 500; /* Slightly bolder text */
+            color: #4b5563; /* Default text color for nav links */
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Ensure padding works */
+        }
+        nav a:hover {
+            background-color: #e0e7ff; /* Light indigo background on hover */
+            color: #4f46e5; /* Darker indigo text on hover */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+        }
+        /* Active state for navigation links */
+        nav a.active {
+            background-color: #4f46e5; /* Darker indigo for active */
+            color: white; /* Active text color remains white for contrast */
+            font-weight: 600; /* Bolder for active */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Chart specific styles */
+        .chart-container {
+            position: relative;
+            height: 40vh; /* Responsive height */
+            width: 100%;
+            margin: 0 auto; /* Center the chart */
+            max-height: 400px; /* Max height for larger screens */
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 50vh;
+                max-width: 800px; /* Max width for larger screens */
+            }
+        }
+
+        /* Swiper specific styles */
+        .swiper-container {
+            width: 100%;
+            padding-bottom: 3rem; /* Space for pagination */
+        }
+        .swiper-slide {
+            background: #ffffff; /* Default card background */
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 200px; /* Ensure slides have a minimum height */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease;
+        }
+        .swiper-slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+        .swiper-slide h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937; /* Default section title color */
+            margin-bottom: 0.5rem;
+        }
+        .swiper-slide p {
+            font-size: 0.9rem;
+            color: #374151; /* Default text color */
+        }
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #6366f1;
+            width: 40px; /* Adjust size */
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background-color: #6366f1;
+            color: white;
+        }
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 1.25rem; /* Adjust icon size */
+        }
+        .swiper-pagination-bullet {
+            background-color: #a78bfa; /* Light purple */
+            opacity: 0.7;
+            transition: background-color 0.3s ease;
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #6366f1; /* Indigo */
+            opacity: 1;
+        }
+
+        /* Message Box */
+        .message-box {
+            position: fixed;
+            bottom: 80px; /* Above back-to-top button */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+
+        /* Copy Icon */
+        .copy-icon {
+            margin-left: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            fill: currentColor; /* Inherit color from parent */
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+        .copy-icon:hover {
+            opacity: 1;
         }
     </style>
 </head>
 <body class="antialiased">
     <!-- Sticky Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-white shadow-md py-4 px-8 rounded-b-xl">
-        <ul class="flex justify-center space-x-8 text-lg font-medium">
-            <li><a href="#profile" class="text-gray-700 hover:text-indigo-600 transition duration-300">Profile</a></li>
-            <li><a href="#experience" class="text-gray-700 hover:text-indigo-600 transition duration-300">Experience</a></li>
-            <li><a href="#skills" class="text-gray-700 hover:text-indigo-600 transition duration-300">Skills</a></li>
-            <li><a href="#projects" class="text-gray-700 hover:text-indigo-600 transition duration-300">Projects</a></li>
-            <li><a href="#education" class="text-gray-700 hover:text-indigo-600 transition duration-300">Education</a></li>
-            <li><a href="#awards" class="text-gray-700 hover:text-indigo-600 transition duration-300">Awards</a></li>
+    <nav class="sticky top-0 z-50 rounded-b-xl">
+        <ul class="flex justify-center space-x-4 md:space-x-8 text-sm md:text-lg font-medium">
+            <li><a href="#profile" class="nav-link">Profile</a></li>
+            <li><a href="#experience" class="nav-link">Experience</a></li>
+            <li><a href="#skills" class="nav-link">Skills</a></li>
+            <li><a href="#project-showcase" class="nav-link">Project Showcase</a></li>
+            <li><a href="#data-insights" class="nav-link">Data Insights</a></li>
+            <li><a href="#education" class="nav-link">Education</a></li>
+            <li><a href="#awards" class="nav-link">Awards</a></li>
         </ul>
     </nav>
 
@@ -255,61 +356,57 @@
         <header class="text-center py-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl shadow-lg mb-8">
             <canvas id="threejs-canvas"></canvas>
             <div class="header-content">
-                <h1 class="text-5xl font-extrabold mb-2">Abhishek Kumar</h1>
-                <p class="text-2xl font-light">Product Analyst</p>
-                <div class="flex justify-center space-x-6 mt-4">
-                    <a href="mailto:skumar.abhishek18014@gmail.com" class="text-white hover:text-indigo-200 transition duration-300">
-                        <svg class="w-6 h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                        skumar.abhishek18014@gmail.com
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-2">Abhishek Kumar</h1>
+                <p class="text-xl md:text-2xl font-light">Product Analyst</p>
+                <div class="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-6 mt-4 text-sm md:text-base">
+                    <!-- Masked Email -->
+                    <a href="#" data-email="skumar.abhishek18014@gmail.com" class="text-white hover:text-indigo-200 transition duration-300 flex items-center justify-center email-reveal">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                        <span class="masked-text">Show Email</span>
                     </a>
-                    <a href="tel:+919756730523" class="text-white hover:text-indigo-200 transition duration-300">
-                        <svg class="w-6 h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.774a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-                        +91 9756730523
+                    <!-- Masked Phone -->
+                    <a href="#" data-phone="+919756730523" class="text-white hover:text-indigo-200 transition duration-300 flex items-center justify-center phone-reveal">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.774a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                        <span class="masked-text">Show Phone</span>
                     </a>
-                    <a href="https://www.linkedin.com/in/abhishek-kumar" target="_blank" class="text-white hover:text-indigo-200 transition duration-300">
-                        <svg class="w-6 h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.3 0H3.7A3.7 3.7 0 000 3.7v12.6A3.7 3.7 0 003.7 20h12.6A3.7 3.7 0 0020 16.3V3.7A3.7 3.7 0 0016.3 0zM7.2 16.5H4.5V7.5h2.7v9zM5.8 6.2a1.7 1.7 0 110-3.4 1.7 1.7 0 010 3.4zm10.7 10.3h-2.7v-4.5c0-1.1-.4-1.8-1.4-1.8-.8 0-1.3.6-1.5 1.2-.1.2-.1.4-.1.7v4.4H9.5V7.5h2.7v1.2c.4-.6 1.1-1.4 2.5-1.4 1.8 0 3.2 1.2 3.2 3.8v5.4z" clip-rule="evenodd"></svg>
+                    <a href="https://www.linkedin.com/in/abhishek-kumar" target="_blank" class="text-white hover:text-indigo-200 transition duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.3 0H3.7A3.7 3.7 0 000 3.7v12.6A3.7 3.7 0 003.7 20h12.6A3.7 3.7 0 0020 16.3V3.7A3.7 3.7 0 0016.3 0zM7.2 16.5H4.5V7.5h2.7v9zM5.8 6.2a1.7 1.7 0 110-3.4 1.7 1.7 0 010 3.4zm10.7 10.3h-2.7v-4.5c0-1.1-.4-1.8-1.4-1.8-.8 0-1.3.6-1.5 1.2-.1.2-.1.4-.1.7v4.4H9.5V7.5h2.7v1.2c.4-.6 1.1-1.4 2.5-1.4 1.8 0 3.2 1.2 3.2 3.8v5.4z" clip-rule="evenodd"></svg>
                         LinkedIn
                     </a>
                 </div>
-                <p class="text-lg mt-2">Bangalore, Karnataka</p>
+                <!-- Download Resume Button -->
+                <div class="mt-6">
+                    <button id="downloadResumeBtn" class="bg-white text-indigo-600 font-bold py-3 px-6 rounded-full shadow-lg hover:bg-indigo-100 transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center mx-auto">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        Download Resume
+                    </button>
+                </div>
             </div>
         </header>
 
         <!-- Profile Section -->
-        <section id="profile" class="card">
+        <section id="profile" class="card fade-in-section">
             <h2 class="section-title">Profile</h2>
-            <p id="profile-text" class="text-gray-700 leading-relaxed mb-4">
+            <p id="profile-text" class="text-gray-700 leading-relaxed text-sm md:text-base">
                 Results-driven Analytics Professional with 2+ years of experience in product analytics, business intelligence, and data automation
                 across e-commerce and fintech. Proficient in SQL, Python, Tableau, and Looker with expertise in building dashboards, funnel
                 analysis, root cause analysis (RCA), and user segmentation. Demonstrated success in improving conversion rates, optimizing
                 inventory, automating reporting pipelines, and driving metric-driven decision-making. Strong background in stakeholder
                 management, metric design, and cross-functional collaboration with product, engineering, and operations teams.
             </p>
-            <div class="flex justify-center space-x-4 mt-4">
-                <button id="summarize-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    Summarize Profile ✨
-                </button>
-                <button id="chat-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    Chat with AI Assistant 💬
-                </button>
-            </div>
-            <div id="summary-output" class="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200 text-gray-800 hidden">
-                <h3 class="font-semibold text-lg mb-2">AI-Generated Summary:</h3>
-                <p id="summary-text"></p>
-            </div>
         </section>
 
         <!-- Work Experience Section -->
-        <section id="experience" class="card">
+        <section id="experience" class="card fade-in-section">
             <h2 class="section-title">Work Experience</h2>
 
             <div class="experience-item">
-                <h3 class="text-xl font-semibold text-gray-800">Product Analyst</h3>
-                <p class="text-lg text-indigo-600">
+                <h3 class="text-lg md:text-xl font-semibold text-gray-800">Product Analyst</h3>
+                <p class="text-base md:text-lg text-indigo-600">
                     <b>Myntra</b>
                 </p>
-                <p class="text-sm text-gray-500 mb-2">11/2024 - Present</p>
-                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <p class="text-xs md:text-sm text-gray-500 mb-2">11/2024 - Present</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm md:text-base">
                     <li>Reduced stockouts by <b>20%</b> via rule-based inventory model across 20K+ styles, automated weekly performance tracking.</li>
                     <li>Improved PLP CTR by <b>15-20%</b> through data-driven sort logic using product scoring in collaboration with Storefront.</li>
                     <li>Identified <b>3x</b> conversion gap via SPU/session simulations; influenced product roadmap and engagement strategy.</li>
@@ -321,12 +418,12 @@
             </div>
 
             <div class="experience-item">
-                <h3 class="text-xl font-semibold text-gray-800">Data Analyst</h3>
-                <p class="text-lg text-indigo-600">
+                <h3 class="text-lg md:text-xl font-semibold text-gray-800">Data Analyst</h3>
+                <p class="text-base md:text-lg text-indigo-600">
                     <b>Razorpay Software Private Limited</b>
                 </p>
-                <p class="text-sm text-gray-500 mb-2">07/2023 - 11/2024</p>
-                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <p class="text-xs md:text-sm text-gray-500 mb-2">07/2023 - 11/2024</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm md:text-base">
                     <li>Process Automation: Designed Python-based automation tools to generate banking reports, reducing processing time from 3+ hours to 20 minutes (<b>90% efficiency gain</b>).</li>
                     <li>Dashboard Migration & Visualization: Led migration of 15+ dashboards from Looker to Tableau, creating self-serve tools that reduced ad-hoc requests by <b>30%</b>.</li>
                     <li>Metrics Optimization: Redefined KPIs for the Card/UPI Optimization Framework, improving workflow efficiency by <b>70%</b> and saving <b>25 lakhs annually</b>.</li>
@@ -336,9 +433,9 @@
         </section>
 
         <!-- Skills Section -->
-        <section id="skills" class="card">
+        <section id="skills" class="card fade-in-section">
             <h2 class="section-title">Skills</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 text-sm md:text-base">
                 <div>
                     <p class="skill-category"><b>Tools:</b></p>
                     <p>Airflow, Databricks, Jupyter Notebook, Google sheets, Tableau, Looker</p>
@@ -354,42 +451,79 @@
             </div>
         </section>
 
-        <!-- Projects Section -->
-        <section id="projects" class="card">
-            <h2 class="section-title">Projects</h2>
-            <div class="project-item">
-                <h3 class="text-xl font-semibold text-gray-800"><b>Rule based Model to identify Top selling style</b></h3>
-                <p class="text-gray-700">Developed rules based model which assigning a normalize score and rank styles according with certain threshold.</p>
+        <!-- Project Showcase Section (New Swiper.js) -->
+        <section id="project-showcase" class="card fade-in-section">
+            <h2 class="section-title">Project Showcase</h2>
+            <p class="text-gray-700 leading-relaxed text-sm md:text-base mb-6 text-center">
+                Explore some of my key projects and their impact through this interactive carousel.
+            </p>
+            <!-- Swiper -->
+            <div class="swiper swiper-container">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1: Rule based Model -->
+                    <div class="swiper-slide">
+                        <h3 class="text-indigo-600">Rule-based Model to Identify Top Selling Style</h3>
+                        <p>Developed a model assigning a normalized score and rank styles, enabling data-driven prioritization for assortment and UX improvements.</p>
+                    </div>
+                    <!-- Slide 2: Card and UPI Optimization -->
+                    <div class="swiper-slide">
+                        <h3 class="text-indigo-600">Card and UPI Optimization Framework</h3>
+                        <p>Revamped metrics and workflows, achieving 70% operational efficiency and saving 25 lakhs annually.</p>
+                    </div>
+                    <!-- Slide 3: Robotic Process Automation -->
+                    <div class="swiper-slide">
+                        <h3 class="text-indigo-600">Robotic Process Automation for Bank Reports</h3>
+                        <p>Automated banking report generation, reducing processing time from 3+ hours to 20 minutes (90% efficiency gain).</p>
+                    </div>
+                    <!-- Slide 4: Myntra Stockouts -->
+                    <div class="swiper-slide">
+                        <h3 class="text-indigo-600">Reduced Stockouts at Myntra</h3>
+                        <p>Reduced stockouts by 20% via rule-based inventory model across 20K+ styles, automating weekly performance tracking.</p>
+                    </div>
+                    <!-- Slide 5: Myntra PLP CTR -->
+                    <div class="swiper-600">
+                        <h3 class="text-indigo-600">Improved PLP CTR at Myntra</h3>
+                        <p>Improved PLP CTR by 15-20% through data-driven sort logic using product scoring in collaboration with Storefront.</p>
+                    </div>
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
-            <div class="project-item">
-                <h3 class="text-xl font-semibold text-gray-800"><b>Card and UPI optimization framework</b></h3>
-                <p class="text-gray-700">Revamped metrics and workflows, achieving 70% operational efficiency.</p>
-            </div>
-            <div class="project-item">
-                <h3 class="text-xl font-semibold text-gray-800"><b>Robotic Process Automation for Bank Reports</b></h3>
-                <p class="text-gray-700">Saved 50+ hours monthly by automating report generation.</p>
+        </section>
+
+        <!-- Data Insights Section -->
+        <section id="data-insights" class="card fade-in-section">
+            <h2 class="section-title">Data Insights</h2>
+            <p class="text-gray-700 leading-relaxed text-sm md:text-base mb-6 text-center">
+                Here's a sample visualization of project impact, demonstrating my ability to translate data into actionable insights.
+            </p>
+            <div class="chart-container">
+                <canvas id="projectImpactChart"></canvas>
             </div>
         </section>
 
         <!-- Education Section -->
-        <section id="education" class="card">
+        <section id="education" class="card fade-in-section">
             <h2 class="section-title">Education</h2>
-            <h3 class="text-xl font-semibold text-gray-800"><b>Bachelor of Engineering (Electronics and Communication)</b></h3>
-            <p class="text-lg text-indigo-600">Dayananda Sagar College of Engineering, Bangalore</p>
-            <p class="text-sm text-gray-500">2019-2023</p>
+            <h3 class="text-base md:text-xl font-semibold text-gray-800"><b>Bachelor of Engineering (Electronics and Communication)</b></h3>
+            <p class="text-sm md:text-lg text-indigo-600">Dayananda Sagar College of Engineering, Bangalore</p>
+            <p class="text-xs md:text-sm text-gray-500">2019-2023</p>
         </section>
 
         <!-- Awards Section -->
-        <section id="awards" class="card">
+        <section id="awards" class="card fade-in-section">
             <h2 class="section-title">Awards</h2>
             <div class="award-item">
-                <h3 class="text-xl font-semibold text-gray-800"><b>Most Valuable Player at Razorpay</b></h3>
-                <p class="text-gray-700">Recognized for exceptional performance and ownership.</p>
+                <h3 class="text-base md:text-xl font-semibold text-gray-800"><b>Most Valuable Player at Razorpay</b></h3>
+                <p class="text-gray-700 text-sm md:text-base">Recognized for exceptional performance and ownership.</p>
             </div>
         </section>
 
         <!-- Footer Section -->
-        <footer class="text-center py-6 text-gray-600">
+        <footer class="text-center py-6 text-gray-600 text-sm md:text-base">
             <p>&copy; 2025 Abhishek Kumar. All rights reserved.</p>
         </footer>
     </div>
@@ -397,39 +531,17 @@
     <!-- Back to Top Button -->
     <button onclick="topFunction()" id="back-to-top" title="Go to top">↑</button>
 
-    <!-- Custom Modal for Loading and Summaries -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
-            <div id="modal-body"></div>
-        </div>
-    </div>
+    <!-- Message Box for Copy/Download Feedback -->
+    <div id="messageBox" class="message-box"></div>
 
-    <!-- Chat Modal -->
-    <div id="chatModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="document.getElementById('chatModal').style.display='none'">&times;</span>
-            <h3 class="text-2xl font-semibold mb-4 text-gray-800">AI Assistant Chat</h3>
-            <div id="chat-history" class="flex flex-col mb-4">
-                <!-- Chat messages will appear here -->
-            </div>
-            <div id="chat-input-container">
-                <textarea id="chat-input" class="flex-grow p-2 border rounded-lg resize-none" placeholder="Ask a question about Abhishek's portfolio..."></textarea>
-                <button id="send-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Send</button>
-            </div>
-            <div id="chat-loader" class="chat-loader">
-                <div class="loader"></div>
-                <p class="mt-2">AI is typing...</p>
-            </div>
-        </div>
-    </div>
+    <!-- Swiper.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
         // PWA: Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const serviceWorkerUrl = '/service-worker.js';
-                // Added console.log to confirm the URL being registered
                 console.log('Attempting to register Service Worker from:', serviceWorkerUrl);
                 navigator.serviceWorker.register(serviceWorkerUrl)
                     .then(registration => {
@@ -445,11 +557,41 @@
         document.querySelectorAll('nav a').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const targetId = this.getAttribute('href').substring(1); // Get section ID
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
             });
         });
+
+        // Highlight active navigation link based on scroll position
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section[id]');
+
+        function highlightNavLink() {
+            let currentActive = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                // Check if the section is at least 50% visible in the viewport
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                    currentActive = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === currentActive) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightNavLink);
+        window.addEventListener('load', highlightNavLink); // Call on load to set initial active link
+
 
         // Get the back-to-top button
         let mybutton = document.getElementById("back-to-top");
@@ -470,54 +612,6 @@
             document.body.scrollTop = 0; // For Safari
             document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
         }
-
-        // Gemini API integration for summarizing profile
-        document.getElementById('summarize-button').addEventListener('click', async () => {
-            const profileTextElement = document.getElementById('profile-text');
-            const summaryOutputElement = document.getElementById('summary-output');
-            const summaryTextElement = document.getElementById('summary-text');
-            const modal = document.getElementById('myModal');
-            const modalBody = document.getElementById('modal-body');
-
-            // Show loading indicator
-            summaryOutputElement.classList.add('hidden');
-            modal.style.display = 'flex';
-            modalBody.innerHTML = '<div class="loader"></div><p class="mt-4">Generating summary...</p>';
-
-            const profileContent = profileTextElement.textContent.trim();
-            const prompt = `Please summarize the following professional profile in a concise manner, highlighting key skills and achievements:\n\n${profileContent}`;
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will automatically provide this at runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    summaryTextElement.textContent = text;
-                    summaryOutputElement.classList.remove('hidden');
-                    modal.style.display = 'none'; // Hide modal on success
-                } else {
-                    console.error('Gemini API response structure unexpected:', result);
-                    modalBody.innerHTML = '<p class="text-red-500">Error: Could not generate summary. Please try again.</p>';
-                }
-            } catch (error) {
-                console.error('Error calling Gemini API:', error);
-                modalBody.innerHTML = '<p class="text-red-500">Network error or API call failed. Please check your connection and try again.</p>';
-            }
-        });
 
         // Three.js Animation Setup
         let scene, camera, renderer, sphere;
@@ -563,8 +657,9 @@
         }
 
         function onDocumentMouseMove(event) {
-            mouseX = (event.clientX - windowHalfX) / 100;
-            mouseY = (event.clientY - windowHalfY) / 100;
+            // Increased sensitivity for mouse movement
+            mouseX = (event.clientX - windowHalfX) / 50; // Was /100
+            mouseY = (event.clientY - windowHalfY) / 50; // Was /100
         }
 
         function onWindowResize() {
@@ -575,115 +670,365 @@
             }
             windowHalfX = window.innerWidth / 2;
             windowHalfY = window.innerHeight / 2;
+            // Also resize charts on window resize
+            if (window.projectImpactChart) {
+                window.projectImpactChart.resize();
+            }
+            // Swiper might need update on resize, though responsive options handle most
+            if (window.mySwiper) {
+                window.mySwiper.update();
+            }
         }
 
         function animateThreeJS() {
             requestAnimationFrame(animateThreeJS);
 
-            // Rotate the sphere
-            sphere.rotation.x += 0.005;
-            sphere.rotation.y += 0.005;
+            // Apply mouse influence to sphere rotation
+            // The sphere will now rotate based on mouse position, in addition to its constant rotation
+            sphere.rotation.x += (mouseY * 0.005 - sphere.rotation.x) * 0.1; // Smoothly move towards mouse-influenced rotation
+            sphere.rotation.y += (mouseX * 0.005 - sphere.rotation.y) * 0.1; // Smoothly move towards mouse-influenced rotation
 
             // Move camera based on mouse position
             camera.position.x += (mouseX - camera.position.x) * .05;
             camera.position.y += (-mouseY - camera.position.y) * .05;
-            camera.lookAt(scene.position);
+
+            // Adjust camera's lookAt target slightly based on mouse position
+            // This makes the camera "follow" the mouse slightly, enhancing interactivity
+            camera.lookAt(new THREE.Vector3(mouseX * 0.01, -mouseY * 0.01, 0)); // Look slightly towards mouse
 
             renderer.render(scene, camera);
         }
 
-        // Initialize Three.js when the window loads
+        // Initialize Three.js and other features when the window loads
         window.onload = function() {
             initThreeJS();
+            setupIntersectionObserver(); // Call the Intersection Observer setup
+            setupContactReveal(); // Call the contact reveal setup
+            renderProjectImpactChart(); // Render the Chart.js chart
+            initSwiper(); // Initialize Swiper.js
+            highlightNavLink(); // Call on load to set initial active link
         };
 
-        // AI Assistant Chat Logic
-        const chatButton = document.getElementById('chat-button');
-        const chatModal = document.getElementById('chatModal');
-        const chatHistory = document.getElementById('chat-history');
-        const chatInput = document.getElementById('chat-input');
-        const sendButton = document.getElementById('send-button');
-        const chatLoader = document.getElementById('chat-loader');
+        // Intersection Observer for fade-in sections
+        function setupIntersectionObserver() {
+            const sections = document.querySelectorAll('.fade-in-section');
 
-        // Function to collect all portfolio text for context
-        function getPortfolioContext() {
-            const sections = document.querySelectorAll('section[id]');
-            let context = "Here is the portfolio information about Abhishek Kumar:\n\n";
-            sections.forEach(section => {
-                context += `--- ${section.id.toUpperCase()} ---\n`;
-                context += section.textContent.trim() + "\n\n";
-            });
-            return context;
-        }
+            const observerOptions = {
+                root: null, // viewport as the root
+                rootMargin: '0px',
+                threshold: 0.1 // 10% of the section must be visible
+            };
 
-        chatButton.addEventListener('click', () => {
-            chatModal.style.display = 'flex';
-            chatHistory.innerHTML = ''; // Clear previous chat history
-            chatInput.value = ''; // Clear input field
-            // Add initial greeting message from AI
-            addMessageToChat('Hello! I am an AI assistant. Ask me anything about Abhishek Kumar\'s portfolio.', 'ai');
-        });
-
-        sendButton.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent new line in textarea
-                sendMessage();
-            }
-        });
-
-        async function sendMessage() {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
-
-            addMessageToChat(userMessage, 'user');
-            chatInput.value = '';
-            chatLoader.style.display = 'block';
-            chatHistory.scrollTop = chatHistory.scrollHeight; // Scroll to bottom
-
-            const portfolioContext = getPortfolioContext();
-            const prompt = `Based on the following portfolio information, answer the user's question. If the information is not directly available in the portfolio, state that you cannot answer based on the provided data.
-            \n\nPortfolio Information:\n${portfolioContext}\n\nUser Question: ${userMessage}`;
-
-            try {
-                let chatHistoryArr = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistoryArr };
-                const apiKey = "AIzaSyBpGNt2H095s_8OYg0LhQVvORF8z1-19SA"; // Canvas will automatically provide this at runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
                 });
+            }, observerOptions);
 
-                const result = await response.json();
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const aiResponseText = result.candidates[0].content.parts[0].text;
-                    addMessageToChat(aiResponseText, 'ai');
-                } else {
-                    console.error('Gemini API response structure unexpected:', result);
-                    addMessageToChat('I apologize, but I could not generate a response. Please try again.', 'ai');
-                }
-            } catch (error) {
-                console.error('Error calling Gemini API for chat:', error);
-                modalBody.innerHTML = '<p class="text-red-500">Network error or API call failed. Please check your connection and try again.</p>'; // Use modalBody for general errors
-                addMessageToChat('I am having trouble connecting to the AI. Please check your internet connection or try again later.', 'ai'); // Also add to chat history
-            } finally {
-                chatLoader.style.display = 'none';
-                chatHistory.scrollTop = chatHistory.scrollHeight; // Scroll to bottom after AI response
+        // Function to set up click-to-reveal for contact details
+        function setupContactReveal() {
+            document.querySelectorAll('.email-reveal').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default link behavior initially
+                    const email = this.dataset.email;
+                    const span = this.querySelector('.masked-text');
+                    if (span.textContent === 'Show Email') {
+                        span.textContent = email;
+                        this.href = `mailto:${email}`;
+                        this.style.cursor = 'pointer'; // Indicate it's now clickable as a mailto link
+                        addCopyButton(this, email); // Add copy button
+                    }
+                });
+            });
+
+            document.querySelectorAll('.phone-reveal').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default link behavior initially
+                    const phone = this.dataset.phone;
+                    const span = this.querySelector('.masked-text');
+                    if (span.textContent === 'Show Phone') {
+                        span.textContent = phone;
+                        this.href = `tel:${phone}`;
+                        this.style.cursor = 'pointer'; // Indicate it's now clickable as a tel link
+                        addCopyButton(this, phone); // Add copy button
+                    }
+                });
+            });
+        }
+
+        // Function to add copy button
+        function addCopyButton(parentLink, textToCopy) {
+            // Check if a copy button already exists to prevent duplicates
+            if (parentLink.querySelector('.copy-icon')) {
+                return;
+            }
+
+            const copyButton = document.createElement('button');
+            copyButton.classList.add('copy-icon');
+            copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path d="M7.5 3.75A1.5 1.5 0 006 5.25v.75A1.5 1.5 0 007.5 7h.75v-.75A.75.75 0 018.25 5.5h1.5A.75.75 0 0110.5 6.25v.75h.75A1.5 1.5 0 0012 5.25v-.75A1.5 1.5 0 0010.5 3.75h-3z"></path>
+                                    <path fill-rule="evenodd" d="M3 6a3 3 0 00-3 3v10.5a3 3 0 003 3h7.5a3 3 0 003-3V15a.75.75 0 00-.75-.75h-1.5a.75.75 0 00-.75.75v.75a.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V9a.75.75 0 01.75-.75h.75V6H3zm6 1.5H7.5A.75.75 0 006 8.25v1.5A.75.75 0 007.5 10.5h1.5A.75.75 0 0010.5 9.75v-1.5A.75.75 0 009.75 7.5z" clip-rule="evenodd"></path>
+                                    <path fill-rule="evenodd" d="M14.25 5.25A1.5 1.5 0 0012.75 3.75h-1.5a.75.75 0 000 1.5h1.5v.75A.75.75 0 0112.75 6.75h-1.5a.75.75 0 01-.75-.75V5.25a.75.75 0 00-.75-.75h-1.5a.75.75 0 00-.75.75v.75c0 .414.336.75.75.75h.75v.75A1.5 1.5 0 0011.25 9h1.5a1.5 1.5 0 001.5-1.5V6.75h.75A1.5 1.5 0 0016.5 5.25v-.75A1.5 1.5 0 0015 3.75h-1.5z" clip-rule="evenodd"></path>
+                                    </svg>`;
+            copyButton.title = `Copy ${textToCopy}`;
+            copyButton.setAttribute('aria-label', `Copy ${textToCopy} to clipboard`);
+
+            copyButton.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent the parent link from activating
+                e.stopPropagation(); // Stop event bubbling to parent link
+                copyTextToClipboard(textToCopy);
+            });
+            parentLink.appendChild(copyButton);
+        }
+
+        // Function to copy text to clipboard
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed'; // Prevent scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showMessage('Copied to clipboard!', 'success');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showMessage('Failed to copy.', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Function to display a temporary message box
+        function showMessage(message, type = 'info') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = 'message-box show'; // Reset classes and add 'show'
+
+            if (type === 'success') {
+                messageBox.style.backgroundColor = '#4CAF50'; // Green
+            } else if (type === 'error') {
+                messageBox.style.backgroundColor = '#f44336'; // Red
+            } else {
+                messageBox.style.backgroundColor = '#2196F3'; // Blue
+            }
+
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Chart.js: Render Project Impact Chart
+        function renderProjectImpactChart() {
+            const ctx = document.getElementById('projectImpactChart');
+            if (ctx) {
+                window.projectImpactChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Myntra Stockouts', 'Myntra PLP CTR', 'Razorpay Automation', 'Razorpay Metrics'],
+                        datasets: [{
+                            label: 'Impact (%)',
+                            data: [20, 18, 90, 70], // Sample data based on your resume
+                            backgroundColor: [
+                                'rgba(99, 102, 241, 0.8)', // Indigo-500
+                                'rgba(139, 92, 246, 0.8)', // Purple-500
+                                'rgba(79, 70, 229, 0.8)',  // Indigo-600
+                                'rgba(124, 58, 237, 0.8)'  // Purple-600
+                            ],
+                            borderColor: [
+                                'rgba(99, 102, 241, 1)',
+                                'rgba(139, 92, 246, 1)',
+                                'rgba(79, 70, 229, 1)',
+                                'rgba(124, 58, 237, 1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 5 // Rounded bars
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow canvas to resize freely
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Key Project Impact (Sample Data)',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold',
+                                    family: 'Inter, sans-serif'
+                                },
+                                color: '#1f2937' /* Default section title color */
+                            },
+                            legend: {
+                                display: false // Hide legend as there's only one dataset
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Impact (%)',
+                                    font: {
+                                        size: 14,
+                                        family: 'Inter, sans-serif'
+                                    },
+                                    color: '#374151' /* Default text color */
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%'; // Add % sign to y-axis labels
+                                    },
+                                    font: {
+                                        family: 'Inter, sans-serif'
+                                    },
+                                    color: '#374151' /* Default text color */
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)' // Lighter grid lines
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: {
+                                        family: 'Inter, sans-serif'
+                                    },
+                                    color: '#374151' /* Default text color */
+                                },
+                                grid: {
+                                    display: false // Hide x-axis grid lines
+                                }
+                            }
+                        }
+                    }
+                });
             }
         }
 
-        function addMessageToChat(message, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('chat-message', `${sender}-message`);
-            messageElement.textContent = message;
-            chatHistory.appendChild(messageElement);
+        // Swiper.js: Initialize Swiper
+        function initSwiper() {
+            window.mySwiper = new Swiper('.swiper-container', {
+                // Optional parameters
+                direction: 'horizontal',
+                loop: true, // Enable continuous loop mode
+
+                // Autoplay
+                autoplay: {
+                    delay: 5000, // 5 seconds
+                    disableOnInteraction: false, // Continue autoplay after user interaction
+                },
+
+                // If we need pagination
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true, // Make pagination dots clickable
+                },
+
+                // Navigation arrows
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+
+                // And if we need scrollbar
+                scrollbar: {
+                    el: '.swiper-scrollbar',
+                },
+
+                // Responsive breakpoints
+                breakpoints: {
+                    640: { // Tailwind's 'sm' breakpoint
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                    },
+                    768: { // Tailwind's 'md' breakpoint
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1024: { // Tailwind's 'lg' breakpoint
+                        slidesPerView: 3,
+                        spaceBetween: 40,
+                    },
+                },
+                // Add a creative effect, e.g., 'fade' or 'cube'
+                // For a more exciting visual, let's use 'coverflow' or 'flip'
+                // However, 'slide' is most robust. For "exciting", let's try 'coverflow'
+                effect: 'coverflow', // Or 'fade', 'cube', 'flip'
+                coverflowEffect: {
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                },
+            });
         }
+
+        // Download Resume Logic
+        document.getElementById('downloadResumeBtn').addEventListener('click', () => {
+            const resumePath = 'Abhishek-Kumar-PA.pdf'; // Ensure this path is correct
+            const link = document.createElement('a');
+            link.href = resumePath;
+            link.download = 'Abhishek-Kumar-PA.pdf'; // Suggested file name for download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showMessage('Resume download initiated!', 'success');
+        });
+
+
+        // Keyboard Navigation Logic
+        const sectionIds = Array.from(sections).map(section => section.id);
+        let currentSectionIndex = 0;
+
+        // Set initial section index based on current scroll position
+        function updateCurrentSectionIndex() {
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                // Check if the section is at least 50% visible in the viewport
+                // Adjusting threshold for better accuracy on mobile
+                if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+                    currentSectionIndex = index;
+                }
+            });
+        }
+        window.addEventListener('scroll', updateCurrentSectionIndex);
+        window.addEventListener('load', updateCurrentSectionIndex);
+
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Prevent default scroll behavior
+                currentSectionIndex = Math.min(currentSectionIndex + 1, sectionIds.length - 1);
+                document.getElementById(sectionIds[currentSectionIndex]).scrollIntoView({ behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault(); // Prevent default scroll behavior
+                currentSectionIndex = Math.max(currentSectionIndex - 1, 0);
+                document.getElementById(sectionIds[currentSectionIndex]).scrollIntoView({ behavior: 'smooth' });
+            }
+        });
     </script>
 </body>
 </html>
